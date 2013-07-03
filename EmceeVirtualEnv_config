@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# This is the config file for EmceeVirtualEnv.
+
+###############
+# Config Vars #
+###############
+
+MCV_VENV_NAME='venv'
+
+DJ_ALIAS_NAME='dj'
+DJRUN_ALIAS_NAME='djrun'

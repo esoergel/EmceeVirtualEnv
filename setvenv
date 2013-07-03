@@ -1,0 +1,95 @@
+#!/bin/bash
+
+# this file should be run once per virtualenv to add the emceevirtualenv customizations
+
+echo "running setvenv"
+
+# if you would like to add these customizations automatically whenever you
+# run mkvirtualenv, add $WORKON_HOME/setvenv to your global postmkvirtualenv file
+# ($WORKON_HOME/postmkvirtualenv)
+
+# WARNING: this script assumes you are already in the project root, so be sure to
+# use it accordingly
+
+# pull in variables from config file
+source $WORKON_HOME/EmceeVirtualEnv_config
+
+
+# This mimics the behavior of setvirtualenvproject
+# it creates a .project file in the virtualenv that stores
+# the current directory as the project root for that virtualenv
+echo $(pwd) > $VIRTUAL_ENV/$VIRTUALENVWRAPPER_PROJECT_FILENAME
+
+# I'm sure there's a better way to generate files with a bash script,
+# but I'm woefully unlearned on that front, so please educate me if you can
+
+# check for an existing virtualenv
+if [ -f $MCV_VENV_NAME ]; then
+    echo "$MCV_VENV_NAME found, would you like to append to it? (y/N)"
+    read APPEND
+    if [ "$APPEND" = "y" ]; then
+        echo "appending to $MCV_VENV_NAME"
+        echo "" >> $MCV_VENV_NAME
+    else
+        echo "cancelling operation"
+        exit
+    fi
+else
+    echo "making file '$MCV_VENV_NAME' to store local environment variables"
+    echo "#!/bin/bash" >> $MCV_VENV_NAME
+    echo "# This file is run whenever you activate this virtualenv." >> $MCV_VENV_NAME
+    echo "# Add environment variables and local aliases here" >> $MCV_VENV_NAME
+fi
+
+echo 'echo "running local venv"' >> $MCV_VENV_NAME
+
+echo "" >> $MCV_VENV_NAME
+echo "" >> $MCV_VENV_NAME
+
+echo "# ------------------" >> $MCV_VENV_NAME
+echo "# EmceeVirtualEnv generated stuff:" >> $MCV_VENV_NAME
+
+echo "" >> $MCV_VENV_NAME
+
+# assume the current dir is project root...
+echo export DJANGO_PROJECT_ROOT="$(pwd)" >> $MCV_VENV_NAME
+# export DJANGO_PROJECT_ROOT="$(pwd)"
+
+# This might need to be changed to PYTHONPATH.
+# VirtualEnvWrapper provides a command add2virtualenv that adds stuff to 
+# a .pth file inside site-packages, but this will allow the user to change
+# DJANGO_PROJECT_ROOT if needed
+echo export "PYTHONPATH=\$PYTHONPATH:\$DJANGO_PROJECT_ROOT" >> $MCV_VENV_NAME
+# export "PYTHONPATH=\$PYTHONPATH:\$DJANGO_PROJECT_ROOT"
+
+# search for a settings file
+# this command needs work
+# DSM=$(readlink -f "$(find -name settings*)")
+# DSM="$(readlink -f "$(find -regex ".*/setting.*[^c]$")")"
+DSM=$(find -regex ".*/setting.*[^c]$" | head -1 |\
+    sed -e 's!^\.\/!!' -e 's!\..*!!' -e 's!\/!\.!')
+if [ "$DSM" ]; then
+    echo "using $DSM as settings module, correct this in your $MCV_VENV_NAME if that's not correct"
+else
+    echo "settings file not found, manually add its path to DJANGO_SETTINGS_MODULE in your $MCV_VENV_NAME file"
+fi
+
+echo export DJANGO_SETTINGS_MODULE="$DSM" >> $MCV_VENV_NAME
+
+echo "" >> $MCV_VENV_NAME
+echo "" >> $MCV_VENV_NAME
+echo "## example secret key setting (please change the key if you use this)" >> $MCV_VENV_NAME
+echo "# export DJANGO_SECRET_KEY='1of*b8rert1h^yxfte1kkl3tr#_k+orinrbw(d!p_=l6bd(v#2'" >> $MCV_VENV_NAME
+
+echo "" >> $MCV_VENV_NAME
+echo '# You should also use environment variables to turn debug on and off' >> $MCV_VENV_NAME
+echo '# rather than changing the code every time.' >> $MCV_VENV_NAME
+echo '# export DJANGO_DEBUG="True"' >> $MCV_VENV_NAME
+
+echo "" >> $MCV_VENV_NAME
+echo '# You can also use a DJANGO_ENV (or similar) variable to differentiate' >> $MCV_VENV_NAME
+echo '# between development, staging, and production settings.' >> $MCV_VENV_NAME
+echo '# export DJANGO_ENV="DEV"' >> $MCV_VENV_NAME
+
+# source the new venv
+source $MCV_VENV_NAME
