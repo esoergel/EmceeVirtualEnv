@@ -73,3 +73,7 @@ To set an environment variable everytime you enter your virtualenvironment, add 
 Check out the ["more information"](more_information.md) file for implementation details.
 
 Should I make a setup.sh script to automate the inital setup?
+
+
+Thanks to [Richard Laskey](https://github.com/rlaskey) for BASH help.
+
