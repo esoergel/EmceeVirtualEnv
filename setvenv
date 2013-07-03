@@ -67,7 +67,7 @@ echo export "PYTHONPATH=\$PYTHONPATH:\$DJANGO_PROJECT_ROOT" >> $MCV_VENV_NAME
 # DSM=$(readlink -f "$(find -name settings*)")
 # DSM="$(readlink -f "$(find -regex ".*/setting.*[^c]$")")"
 DSM=$(find -regex ".*/setting.*[^c]$" | head -1 |\
-    sed -e 's!^\.\/!!' -e 's!\..*!!' -e 's!\/!\.!')
+    sed -e 's!^\.\/!!' -e 's!\..*!!' -e 's!\/!\.!g')
 if [ "$DSM" ]; then
     echo "using $DSM as settings module, correct this in your $MCV_VENV_NAME if that's not correct"
 else
@@ -92,4 +92,5 @@ echo '# between development, staging, and production settings.' >> $MCV_VENV_NAM
 echo '# export DJANGO_ENV="DEV"' >> $MCV_VENV_NAME
 
 # source the new venv
-source $MCV_VENV_NAME
+source $WORKON_HOME/postactivate
+# source $MCV_VENV_NAME
