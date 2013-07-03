@@ -35,7 +35,7 @@ if [ -f $MCV_VENV_NAME ]; then
         return
     fi
 else
-    echo "making file '$MCV_VENV_NAME' to store local environment variables"
+    echo "making file \"$MCV_VENV_NAME\" to store local environment variables"
     echo "#!/bin/bash" >> $MCV_VENV_NAME
     echo "# This file is run whenever you activate this virtualenv." >> $MCV_VENV_NAME
     echo "# Add environment variables and local aliases here" >> $MCV_VENV_NAME
@@ -50,17 +50,10 @@ echo "# ------------------" >> $MCV_VENV_NAME
 echo "# EmceeVirtualEnv generated stuff:" >> $MCV_VENV_NAME
 
 echo "" >> $MCV_VENV_NAME
-
+echo "# The following shoud be the full file path to the\
+root of your django project - where manage.py goes." >> $MCV_VENV_NAME
 # assume the current dir is project root...
 echo export DJANGO_PROJECT_ROOT="$(pwd)" >> $MCV_VENV_NAME
-# export DJANGO_PROJECT_ROOT="$(pwd)"
-
-# This might need to be changed to PYTHONPATH.
-# VirtualEnvWrapper provides a command add2virtualenv that adds stuff to 
-# a .pth file inside site-packages, but this will allow the user to change
-# DJANGO_PROJECT_ROOT if needed
-echo export "PYTHONPATH=\$PYTHONPATH:\$DJANGO_PROJECT_ROOT" >> $MCV_VENV_NAME
-# export "PYTHONPATH=\$PYTHONPATH:\$DJANGO_PROJECT_ROOT"
 
 # search for a settings file
 # this command needs work
@@ -69,16 +62,31 @@ echo export "PYTHONPATH=\$PYTHONPATH:\$DJANGO_PROJECT_ROOT" >> $MCV_VENV_NAME
 DSM=$(find -regex ".*/setting.*[^c]$" | head -1 |\
     sed -e 's!^\.\/!!' -e 's!\..*!!' -e 's!\/!\.!g')
 if [ "$DSM" ]; then
-    echo "using $DSM as settings module, correct this in your $MCV_VENV_NAME if that's not correct"
+    echo "using \"$DSM\" as settings module, correct this in your $MCV_VENV_NAME if that's not correct"
 else
     echo "settings file not found, manually add its path to DJANGO_SETTINGS_MODULE in your $MCV_VENV_NAME file"
 fi
 
+echo "" >> $MCV_VENV_NAME
+echo "# This should be the python dot path to get to your settings module" >> $MCV_VENV_NAME
+echo "# If your settings module is in the root of your project, \
+it'll be \"settings\"" >> $MCV_VENV_NAME
+echo "# Otherwise it'll be something like \"myproject.settings\"" >> $MCV_VENV_NAME
 echo export DJANGO_SETTINGS_MODULE="$DSM" >> $MCV_VENV_NAME
+
+
+# VirtualEnvWrapper provides a command add2virtualenv that adds stuff to 
+# a .pth file inside site-packages, but this will allow the user to change
+# DJANGO_PROJECT_ROOT if needed
+echo "" >> $MCV_VENV_NAME
+echo "# This is adds the project root to your PYTHONPATH \
+so things inside it can be imported" >> $MCV_VENV_NAME
+echo export "PYTHONPATH=\$PYTHONPATH:\$DJANGO_PROJECT_ROOT" >> $MCV_VENV_NAME
+
 
 echo "" >> $MCV_VENV_NAME
 echo "" >> $MCV_VENV_NAME
-echo "## example secret key setting (please change the key if you use this)" >> $MCV_VENV_NAME
+echo "# example secret key setting (please change the key if you use this)" >> $MCV_VENV_NAME
 echo "# export DJANGO_SECRET_KEY='1of*b8rert1h^yxfte1kkl3tr#_k+orinrbw(d!p_=l6bd(v#2'" >> $MCV_VENV_NAME
 
 echo "" >> $MCV_VENV_NAME
