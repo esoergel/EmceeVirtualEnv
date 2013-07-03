@@ -32,7 +32,7 @@ if [ -f $MCV_VENV_NAME ]; then
         echo "" >> $MCV_VENV_NAME
     else
         echo "cancelling operation"
-        exit
+        return
     fi
 else
     echo "making file '$MCV_VENV_NAME' to store local environment variables"
