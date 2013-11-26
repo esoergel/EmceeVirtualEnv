@@ -10,6 +10,17 @@
 source $WORKON_HOME/EmceeVirtualEnv_config
 
 
+#################
+# Activate Venv #
+#################
+
+# This is done last so any local aliases will override the global ones
+
+if [ -f $MCV_VENV_NAME ]; then
+    source $MCV_VENV_NAME
+fi
+
+
 ###########
 # Aliases #
 ###########
@@ -32,14 +43,3 @@ fi
 ## For example, I use a couple heroku-specific aliases:
 # alias hrun="heroku run"
 # alias hdj="heroku run python manage.py"
-
-
-#################
-# Activate Venv #
-#################
-
-# This is done last so any local aliases will override the global ones
-
-if [ -f $MCV_VENV_NAME ]; then
-    source $MCV_VENV_NAME
-fi
